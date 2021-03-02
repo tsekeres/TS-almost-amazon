@@ -5,7 +5,7 @@ const showAuthors = (array) => {
   document.querySelector('#store').innerHTML = '';
   document.querySelector('#form-container').innerHTML = '';
 
-  // CREATE A BUTTON TO ADD BOOKS
+  // CREATE A BUTTON TO ADD AUTHORS
 
   array.forEach((item) => {
     document.querySelector('#store').innerHTML += `<div class="card">

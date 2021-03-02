@@ -16,7 +16,14 @@ const deleteBook = (firebaseKey) => new Promise((resolve, reject) => {
     .then(() => getBooks().then((booksArray) => resolve(booksArray)))
     .catch((error) => reject(error));
 });
-
+// GET SALE BOOKS
+const getSaleBooks = () => new Promise((resolve, reject) => {
+  axios.get(`${dbUrl}/books.json?orderBy="sale"&equalTo=true`)
+    .then((response) => {
+      const saleBooksArray = Object.values(response.data);
+      resolve(saleBooksArray);
+    }).catch((error) => reject(error));
+});
 // CREATE BOOK
 const createBook = (bookObject) => new Promise((resolve, reject) => {
   axios.post(`${dbUrl}/books.json`, bookObject)
@@ -31,4 +38,6 @@ const createBook = (bookObject) => new Promise((resolve, reject) => {
 // UPDATE BOOK
 // SEARCH BOOKS
 
-export { getBooks, createBook, deleteBook };
+export {
+  getBooks, createBook, deleteBook, getSaleBooks
+};
