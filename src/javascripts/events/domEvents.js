@@ -1,3 +1,5 @@
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 import { showBooks } from '../components/books';
 import addBookForm from '../components/forms/addBookForm';
 import { createBook, deleteBook } from '../helpers/data/bookData';
@@ -25,12 +27,14 @@ const domEvents = () => {
     if (e.target.id.includes('submit-book')) {
       console.warn('CLICKED SUBMIT BOOK', e.target.id);
       e.preventDefault();
+      console.warn(firebase.auth().currentUser.uid);
       const bookObject = {
         title: document.querySelector('#title').value,
         image: document.querySelector('#image').value,
         price: document.querySelector('#price').value,
         sale: document.querySelector('#sale').value,
         author_id: document.querySelector('#author').value,
+        uid: firebase.auth().currentUser.uid
       };
       createBook(bookObject).then((booksArray) => showBooks(booksArray));
     }

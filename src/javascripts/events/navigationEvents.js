@@ -1,8 +1,10 @@
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import signOut from '../helpers/auth/signOut';
 import { getAuthors, getFaveAuthors } from '../helpers/data/authorData';
 import { showAuthors } from '../components/authors';
 import { getBooks, getSaleBooks } from '../helpers/data/bookData';
-import { showBooks } from '../components/books';
+import { emptyBooks, showBooks } from '../components/books';
 
 // navigation events
 const navigationEvents = () => {
@@ -12,12 +14,24 @@ const navigationEvents = () => {
 
   // BOOKS ON SALE
   document.querySelector('#sale-books').addEventListener('click', () => {
-    getSaleBooks().then((saleBooksArray) => showBooks(saleBooksArray));
+    getSaleBooks().then((saleBooksArray) => {
+      if (saleBooksArray.length) {
+        showBooks(saleBooksArray);
+      } else {
+        emptyBooks();
+      }
+    });
   });
 
   // ALL BOOKS
   document.querySelector('#all-books').addEventListener('click', () => {
-    getBooks().then((booksArray) => showBooks(booksArray));
+    getBooks(firebase.auth().currentUser.uid).then((booksArray) => {
+      if (booksArray.length) {
+        showBooks(booksArray);
+      } else {
+        emptyBooks();
+      }
+    });
   });
 
   // SEARCH

@@ -5,8 +5,9 @@ import firebaseConfig from '../auth/apiKeys';
 const dbUrl = firebaseConfig.databaseURL;
 
 // GET AUTHORS
-const getAuthors = () => new Promise((resolve, reject) => {
-  axios.get(`${dbUrl}/authors.json`)
+const getAuthors = (userId) => new Promise((resolve, reject) => {
+  axios
+    .get(`${dbUrl}/authors.json?orderBy="uid"&equalTo="${userId}"`)
     .then((response) => {
       if (response.data) {
         const authorArray = Object.values(response.data);
@@ -14,7 +15,8 @@ const getAuthors = () => new Promise((resolve, reject) => {
       } else {
         resolve([]);
       }
-    }).catch((error) => reject(error));
+    })
+    .catch((error) => reject(error));
 });
 
 // DELETE AUTHOR
