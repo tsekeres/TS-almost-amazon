@@ -2,7 +2,11 @@ import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { showBooks } from '../components/books';
 import addBookForm from '../components/forms/addBookForm';
-import { createBook, deleteBook } from '../helpers/data/bookData';
+import editBookForm from '../components/forms/editBookForm';
+import formModal from '../components/forms/formModal';
+import {
+  updateBook, createBook, deleteBook, getSingleBook
+} from '../helpers/data/bookData';
 import addAuthorForm from '../components/forms/addAuthorForm';
 import { showAuthors } from '../components/authors';
 import { createAuthor, deleteAuthor } from '../helpers/data/authorData';
@@ -27,7 +31,6 @@ const domEvents = () => {
     if (e.target.id.includes('submit-book')) {
       console.warn('CLICKED SUBMIT BOOK', e.target.id);
       e.preventDefault();
-      console.warn(firebase.auth().currentUser.uid);
       const bookObject = {
         title: document.querySelector('#title').value,
         image: document.querySelector('#image').value,
@@ -41,12 +44,26 @@ const domEvents = () => {
 
     // CLICK EVENT FOR SHOWING MODAL FORM FOR ADDING A BOOK
     if (e.target.id.includes('edit-book-btn')) {
-      console.warn('CLICKED EDIT BOOK', e.target.id);
+      const firebaseKey = e.target.id.split('--')[1];
+      formModal('Edit Book');
+      getSingleBook(firebaseKey).then((bookObject) => editBookForm(bookObject));
     }
 
     // CLICK EVENT FOR EDITING A BOOK
     if (e.target.id.includes('update-book')) {
-      console.warn('CLICKED EDIT BOOK', e.target.id);
+      const firebaseKey = e.target.id.split('--')[1];
+      e.preventDefault();
+      const bookObject = {
+        title: document.querySelector('#title').value,
+        image: document.querySelector('#image').value,
+        price: document.querySelector('#price').value,
+        sale: document.querySelector('#sale').value,
+        author_id: document.querySelector('#author').value,
+      };
+
+      updateBook(firebaseKey, bookObject).then((booksArray) => showBooks(booksArray));
+
+      $('#formModal').modal('toggle');
     }
 
     // ADD CLICK EVENT FOR DELETING AN AUTHOR
