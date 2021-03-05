@@ -22,7 +22,7 @@ const showAuthors = (array) => {
 };
 
 const emptyAuthors = () => {
-  document.querySelector('#store').innerHTML = '<h1>No Authors</h1>';
+  document.querySelector('#store').innerHTML = '<h1 class="text-white">No Authors</h1>';
 };
 
 export { showAuthors, emptyAuthors };

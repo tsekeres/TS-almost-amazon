@@ -1,3 +1,5 @@
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import axios from 'axios';
 import firebaseConfig from '../auth/apiKeys';
 
@@ -5,9 +7,9 @@ import firebaseConfig from '../auth/apiKeys';
 const dbUrl = firebaseConfig.databaseURL;
 
 // GET AUTHORS
-const getAuthors = (userId) => new Promise((resolve, reject) => {
+const getAuthors = (uid) => new Promise((resolve, reject) => {
   axios
-    .get(`${dbUrl}/authors.json?orderBy="uid"&equalTo="${userId}"`)
+    .get(`${dbUrl}/authors.json?orderBy="uid"&equalTo="${uid}"`)
     .then((response) => {
       if (response.data) {
         const authorArray = Object.values(response.data);
@@ -36,18 +38,37 @@ const getFaveAuthors = () => new Promise((resolve, reject) => {
 });
 
 // CREATE AUTHOR
-const createAuthor = (authorObject) => new Promise((resolve, reject) => {
+const createAuthor = (authorObject, uid) => new Promise((resolve, reject) => {
   axios.post(`${dbUrl}/authors.json`, authorObject)
     .then((response) => {
       const body = { firebaseKey: response.data.name };
       axios.patch(`${dbUrl}/authors/${response.data.name}.json`, body)
         .then(() => {
-          getAuthors().then((authorsArray) => resolve(authorsArray));
+          getAuthors(uid).then((authorsArray) => resolve(authorsArray));
         });
     }).catch((error) => reject(error));
 });
+
+// GET SINGLE AUTHOR
+const getSingleAuthor = (firebaseKey) => new Promise((resolve, reject) => {
+  axios.get(`${dbUrl}/authors/${firebaseKey}.json`)
+    .then((response) => resolve(response.data))
+    .catch((error) => reject(error));
+});
+
 // UPDATE AUTHOR
+const editAuthor = (firebaseKey, authorObject) => new Promise((resolve, reject) => {
+  axios.patch(`${dbUrl}/authors/${firebaseKey}.json`, authorObject)
+    .then(() => getAuthors(firebase.auth().currentUser.uid))
+    .then((authorsArray) => resolve(authorsArray))
+    .catch((error) => reject(error));
+});
 // SEARCH AUTHORS
 export {
-  getAuthors, createAuthor, deleteAuthor, getFaveAuthors
+  getAuthors,
+  createAuthor,
+  deleteAuthor,
+  getFaveAuthors,
+  editAuthor,
+  getSingleAuthor,
 };
