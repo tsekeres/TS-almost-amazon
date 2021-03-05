@@ -1,20 +1,18 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
 import signOut from '../helpers/auth/signOut';
 import { getAuthors, getFaveAuthors } from '../helpers/data/authorData';
-import { showAuthors } from '../components/authors';
+import { emptyAuthors, showAuthors } from '../components/authors';
 import { getBooks, getSaleBooks } from '../helpers/data/bookData';
 import { emptyBooks, showBooks } from '../components/books';
 
 // navigation events
-const navigationEvents = () => {
+const navigationEvents = (uid) => {
   // LOGOUT BUTTON
   document.querySelector('#logout-button')
     .addEventListener('click', signOut);
 
   // BOOKS ON SALE
   document.querySelector('#sale-books').addEventListener('click', () => {
-    getSaleBooks().then((saleBooksArray) => {
+    getSaleBooks(uid).then((saleBooksArray) => {
       if (saleBooksArray.length) {
         showBooks(saleBooksArray);
       } else {
@@ -25,7 +23,7 @@ const navigationEvents = () => {
 
   // ALL BOOKS
   document.querySelector('#all-books').addEventListener('click', () => {
-    getBooks(firebase.auth().currentUser.uid).then((booksArray) => {
+    getBooks(uid).then((booksArray) => {
       if (booksArray.length) {
         showBooks(booksArray);
       } else {
@@ -50,11 +48,19 @@ const navigationEvents = () => {
   });
 
   // ALL AUTHORS
-  document.querySelector('#authors').addEventListener('click', () => getAuthors().then((authors) => showAuthors(authors)));
+  document.querySelector('#authors').addEventListener('click', () => {
+    getAuthors(uid).then((authorsArray) => showAuthors(authorsArray));
+  });
 
   // GET FAVORITE AUTHORS
   document.querySelector('#fave-authors').addEventListener('click', () => {
-    getFaveAuthors().then((faveAuthorsArray) => showAuthors(faveAuthorsArray));
+    getFaveAuthors(uid).then((authorsArray) => {
+      if (authorsArray.length) {
+        showAuthors(authorsArray);
+      } else {
+        emptyAuthors();
+      }
+    });
   });
 };
 

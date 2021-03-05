@@ -1,4 +1,3 @@
-import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import { showBooks } from '../components/books';
 import addBookForm from '../components/forms/addBookForm';
@@ -9,9 +8,12 @@ import {
 } from '../helpers/data/bookData';
 import addAuthorForm from '../components/forms/addAuthorForm';
 import { showAuthors } from '../components/authors';
-import { createAuthor, deleteAuthor } from '../helpers/data/authorData';
+import {
+  getSingleAuthor, editAuthor, createAuthor, deleteAuthor
+} from '../helpers/data/authorData';
+import editAuthorForm from '../components/forms/editAuthorForm';
 
-const domEvents = () => {
+const domEvents = (uid) => {
   document.querySelector('body').addEventListener('click', (e) => {
     // CLICK EVENT FOR DELETING A BOOK
     if (e.target.id.includes('delete-book')) {
@@ -23,26 +25,24 @@ const domEvents = () => {
 
     // CLICK EVENT FOR SHOWING FORM FOR ADDING A BOOK
     if (e.target.id.includes('add-book-btn')) {
-      console.warn('CLICKED ADD BOOK BUTTON', e.target.id);
       addBookForm();
     }
 
     // CLICK EVENT FOR SUBMITTING FORM FOR ADDING A BOOK
     if (e.target.id.includes('submit-book')) {
-      console.warn('CLICKED SUBMIT BOOK', e.target.id);
       e.preventDefault();
       const bookObject = {
         title: document.querySelector('#title').value,
         image: document.querySelector('#image').value,
         price: document.querySelector('#price').value,
-        sale: document.querySelector('#sale').value,
+        sale: document.querySelector('#sale').checked,
         author_id: document.querySelector('#author').value,
-        uid: firebase.auth().currentUser.uid
+        uid,
       };
-      createBook(bookObject).then((booksArray) => showBooks(booksArray));
+      createBook(bookObject, uid).then((booksArray) => showBooks(booksArray));
     }
 
-    // CLICK EVENT FOR SHOWING MODAL FORM FOR ADDING A BOOK
+    // CLICK EVENT FOR SHOWING MODAL FORM FOR EDITING A BOOK
     if (e.target.id.includes('edit-book-btn')) {
       const firebaseKey = e.target.id.split('--')[1];
       formModal('Edit Book');
@@ -57,7 +57,7 @@ const domEvents = () => {
         title: document.querySelector('#title').value,
         image: document.querySelector('#image').value,
         price: document.querySelector('#price').value,
-        sale: document.querySelector('#sale').value,
+        sale: document.querySelector('#sale').checked,
         author_id: document.querySelector('#author').value,
       };
 
@@ -80,6 +80,13 @@ const domEvents = () => {
       addAuthorForm();
     }
 
+    // CLICK EVENT FOR SHOWING MODAL FORM FOR EDITING AN AUTHOR
+    if (e.target.id.includes('edit-author-btn')) {
+      const firebaseKey = e.target.id.split('--')[1];
+      formModal('Edit Author');
+      getSingleAuthor(firebaseKey).then((authorObject) => editAuthorForm(authorObject));
+    }
+
     // ADD CLICK EVENT FOR SUBMITTING FORM FOR ADDING AN AUTHOR
     if (e.target.id.includes('submit-author')) {
       e.preventDefault();
@@ -87,11 +94,28 @@ const domEvents = () => {
         first_name: document.querySelector('#first-name').value,
         last_name: document.querySelector('#last-name').value,
         email: document.querySelector('#email').value,
+        favorite: document.querySelector('#fave').checked,
+        uid,
       };
-      createAuthor(authorObject).then((authorsArray) => showAuthors(authorsArray));
+      createAuthor(authorObject, uid).then((authorsArray) => showAuthors(authorsArray));
     }
 
     // ADD CLICK EVENT FOR EDITING AN AUTHOR
+    if (e.target.id.includes('update-author')) {
+      const firebaseKey = e.target.id.split('--')[1];
+      e.preventDefault();
+      const authorObject = {
+        first_name: document.querySelector('#first-name').value,
+        last_name: document.querySelector('#last-name').value,
+        email: document.querySelector('#email').value,
+        favorite: document.querySelector('#fave').checked,
+        uid,
+      };
+
+      editAuthor(firebaseKey, authorObject).then((authorsArray) => showAuthors(authorsArray));
+
+      $('#formModal').modal('toggle');
+    }
   });
 };
 
