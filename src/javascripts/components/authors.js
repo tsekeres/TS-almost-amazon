@@ -14,7 +14,7 @@ const showAuthors = (array) => {
         <hr>
         <p class="card-text">${item.email}</p>
         <hr>
-        <button class="btn btn-info" data-toggle="modal" data-target="#formModal" id="edit-author-btn--${item.firebaseKey}">Edit Author</button>
+        <button class="btn btn-info" data-toggle="modal" data-target="#formModal" id="show-author-books-btn--${item.firebaseKey}">Author Books</button>
         <button class="btn btn-danger" id="delete-author--${item.firebaseKey}">Delete Author</button>
       </div>
     </div>`;
