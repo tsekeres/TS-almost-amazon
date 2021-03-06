@@ -22,9 +22,9 @@ const getAuthors = (uid) => new Promise((resolve, reject) => {
 });
 
 // DELETE AUTHOR
-const deleteAuthor = (firebaseKey) => new Promise((resolve, reject) => {
+const deleteAuthor = (firebaseKey, uid) => new Promise((resolve, reject) => {
   axios.delete(`${dbUrl}/authors/${firebaseKey}.json`)
-    .then(() => getAuthors().then((authorsArray) => resolve(authorsArray)))
+    .then(() => getAuthors(uid).then((authorsArray) => resolve(authorsArray)))
     .catch((error) => reject(error));
 });
 
@@ -50,8 +50,8 @@ const createAuthor = (authorObject, uid) => new Promise((resolve, reject) => {
 });
 
 // GET SINGLE AUTHOR
-const getSingleAuthor = (firebaseKey) => new Promise((resolve, reject) => {
-  axios.get(`${dbUrl}/authors/${firebaseKey}.json`)
+const getSingleAuthor = (authorId) => new Promise((resolve, reject) => {
+  axios.get(`${dbUrl}/authors/${authorId}.json`)
     .then((response) => resolve(response.data))
     .catch((error) => reject(error));
 });
