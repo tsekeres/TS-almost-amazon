@@ -5,7 +5,6 @@ import { deleteBook, getAuthorBooks } from './bookData';
 const deleteAuthorBooks = (authorId, uid) => new Promise((resolve, reject) => {
   getAuthorBooks(authorId).then((authorBooksArray) => {
     const deleteBooks = authorBooksArray.map((book) => deleteBook(book.firebaseKey));
-    console.warn(deleteBooks);
 
     Promise.all(deleteBooks).then(() => resolve(deleteAuthor(authorId, uid)));
   }).catch((error) => reject(error));
